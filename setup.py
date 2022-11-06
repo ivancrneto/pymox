@@ -63,8 +63,13 @@ Topic :: Utilities
 """
 
 classifier_list = [c for c in classifiers.split("\n") if c]
-install_reqs = [str(p.req) for p in parse_requirements(
-    join(dirname(__file__), 'requirements.txt'), session='req')]
+
+try:
+    install_reqs = [str(p.req) for p in parse_requirements(
+        join(dirname(__file__), 'requirements.txt'), session='req')]
+except AttributeError:
+    install_reqs = [str(p.requirement) for p in parse_requirements(
+        join(dirname(__file__), 'requirements.txt'), session='req')]
 
 setup(
     name='pymox',
