@@ -281,6 +281,7 @@ class Mox(object):
     def __init__(self):
         """Initialize a new Mox."""
 
+        self._check_args = True
         self._mock_objects = []
         self.stubs = stubout.StubOutForTesting()
 
@@ -424,6 +425,20 @@ class Mox(object):
 
         self.stubs.unset_all()
 
+    @property
+    def check_args(self):
+        return self._check_args
+
+    @check_args.setter
+    def check_args(self, value):
+        self._check_args = value
+        for mock_object in self._mock_objects:
+            mock_object._check_args = self._check_args
+
+    @property
+    def expect(self):
+        return Expect(mox_obj=self)
+
     CreateMock = create_mock
     CreateMockAnything = create_mock_anything
     ReplayAll = replay_all
@@ -550,14 +565,21 @@ class MockAnything:
           A new MockMethod aware of MockAnything's state (record or replay).
         """
 
-        return MockMethod(
+        mock_method = MockMethod(
             method_name,
             self._expected_calls_queue,
             self._exceptions_thrown,
             self._replay_mode,
             method_to_mock=method_to_mock,
+            check_args=self._check_args,
             description=self._description,
         )
+        if self._check_args:
+            mock_method._enable_signature_and_args_checkers()
+        else:
+            mock_method._disable_signature_and_args_checkers()
+        # mock_method.enable_checker = True
+        return mock_method
 
     def __nonzero__(self):
         """Return 1 for nonzero so the mock can be used as a conditional."""
@@ -810,12 +832,9 @@ class MockObject(MockAnything, object):
         # If we are in replay mode then simply call the mock __getitem__
         # method.
         if self._replay_mode:
-            return MockMethod(
-                "__getitem__",
-                self._expected_calls_queue,
-                self._exceptions_thrown,
-                self._replay_mode,
-            )(key)
+            return MockMethod("__getitem__", self._expected_calls_queue, self._exceptions_thrown, self._replay_mode)(
+                key
+            )
 
         # Otherwise, create a mock method __getitem__.
         return self._create_mock_method("__getitem__")(key)
@@ -853,12 +872,7 @@ class MockObject(MockAnything, object):
 
         # If we are in replay mode then simply call the mock __iter__ method.
         if self._replay_mode:
-            return MockMethod(
-                "__iter__",
-                self._expected_calls_queue,
-                self._exceptions_thrown,
-                self._replay_mode,
-            )()
+            return MockMethod("__iter__", self._expected_calls_queue, self._exceptions_thrown, self._replay_mode)()
 
         # Otherwise, create a mock method __iter__.
         return self._create_mock_method("__iter__")()
@@ -886,12 +900,9 @@ class MockObject(MockAnything, object):
             raise TypeError("unsubscriptable object")
 
         if self._replay_mode:
-            return MockMethod(
-                "__contains__",
-                self._expected_calls_queue,
-                self._exceptions_thrown,
-                self._replay_mode,
-            )(key)
+            return MockMethod("__contains__", self._expected_calls_queue, self._exceptions_thrown, self._replay_mode)(
+                key
+            )
 
         return self._create_mock_method("__contains__")(key)
 
@@ -1157,6 +1168,7 @@ class MockMethod(object):
         exception_list,
         replay_mode,
         method_to_mock=None,
+        check_args=True,
         description=None,
     ):
         """Construct a new mock method.
@@ -1197,10 +1209,22 @@ class MockMethod(object):
         self._exception = None
         self._side_effects = None
 
+        self._check_args = check_args
+        self._checker = None
+        self._method_to_mock = method_to_mock
+        if self._check_args:
+            self._enable_signature_and_args_checkers()
+
+    def _enable_signature_and_args_checkers(self):
         try:
-            self._checker = MethodSignatureChecker(method_to_mock)
+            self._checker = MethodSignatureChecker(self._method_to_mock)
         except ValueError:
-            self._checker = None
+            pass
+        self._check_args = True
+
+    def _disable_signature_and_args_checkers(self):
+        self._checker = None
+        self.check_args = False
 
     def __call__(self, *params, **named_params):
         """Log parameters and return the specified return value.
@@ -1307,13 +1331,13 @@ class MockMethod(object):
           # rhs: the right hand side of the test
           rhs: MockMethod
         """
+        if not isinstance(rhs, MockMethod):
+            return False
 
-        return (
-            isinstance(rhs, MockMethod)
-            and self._name == rhs._name
-            and self._params == rhs._params
-            and self._named_params == rhs._named_params
-        )
+        if not self._check_args or not rhs._check_args:
+            return self._name == rhs._name
+
+        return self._name == rhs._name and self._params == rhs._params and self._named_params == rhs._named_params
 
     def __hash__(self):
         return id(self)
@@ -2385,3 +2409,33 @@ class MoxTestBase(_MoxTestBase):
         super(MoxTestBase, self).setUp()
         self.mox = Mox()
         self.stubs = stubout.StubOutForTesting()
+
+
+class Create:
+    def __init__(self):
+        self.mox = Mox()
+
+    def __enter__(self):
+        return self.mox
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        pass
+
+
+create = Create()  # noqa
+
+
+class Expect:
+    def __init__(self, mox_obj=None):
+        if not mox_obj:
+            mox_obj = Mox()
+        self.mox = mox_obj
+
+    def __enter__(self):
+        return self.mox
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        self.mox.replay_all()
+
+
+expect = Expect  # noqa
