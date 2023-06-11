@@ -60,6 +60,7 @@ Suggested usage / workflow:
   # Verify all methods were called as expected
   my_mox.VerifyAll()
 """
+import pkgutil
 
 try:
     import abc
@@ -334,7 +335,15 @@ class Mox(object):
         for mock_obj in self._mock_objects:
             mock_obj._Reset()
 
-    def stubout(self, obj, attr_name, use_mock_anything=False):
+    def _resolve_object(self, dot_path):
+        try:
+            target, attribute = dot_path.rsplit(".", 1)
+        except (TypeError, ValueError, AttributeError):
+            raise TypeError(f"Cannot resolve the object and attribute for {dot_path!r}")
+        # return partial(pkgutil.resolve_name, target), attribute
+        return pkgutil.resolve_name(target), attribute
+
+    def stubout(self, obj, attr_name="", use_mock_anything=False):
         """Replace a method, attribute, etc. with a Mock.
 
         This will replace a class or module with a MockObject, and everything
@@ -348,6 +357,9 @@ class Mox(object):
           use_mock_anything: bool. True if a MockAnything should be used
             regardless of the type of attribute.
         """
+        if type(obj) == str:
+            dot_path = ".".join([obj, attr_name]) if attr_name else obj
+            obj, attr_name = self._resolve_object(dot_path)
 
         attr_to_replace = getattr(obj, attr_name)
         attr_type = type(attr_to_replace)
@@ -368,8 +380,9 @@ class Mox(object):
             stub.__name__ = attr_name
 
         self.stubs.Set(obj, attr_name, stub)
+        return stub
 
-    def stubout_class(self, obj, attr_name):
+    def stubout_class(self, obj, attr_name=""):
         """Replace a class with a "mock factory" that will create mock objects.
 
         This is useful if the code-under-test directly instantiates
@@ -407,6 +420,10 @@ class Mox(object):
         my_import.FooClass(9, 10)  # Returns mock2 again.
         mox.VerifyAll()
         """
+        if type(obj) == str:
+            dot_path = ".".join([obj, attr_name]) if attr_name else obj
+            obj, attr_name = self._resolve_object(dot_path)
+
         attr_to_replace = getattr(obj, attr_name)
         attr_type = type(attr_to_replace)
 
@@ -419,6 +436,7 @@ class Mox(object):
         factory = _MockObjectFactory(attr_to_replace, self)
         self._mock_objects.append(factory)
         self.stubs.Set(obj, attr_name, factory)
+        return factory
 
     def unset_stubs(self):
         """Restore stubs to their original state."""
