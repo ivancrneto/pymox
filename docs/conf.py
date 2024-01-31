@@ -60,7 +60,7 @@ copyright = f"2023, { author }"
 # built documents.
 
 # The full version, including alpha/beta/rc tags.
-release = get_version()
+release = get_version().rsplit("+")[0]
 print("RELEASE:")
 print(release)
 # release = metadata.version("pymox")
