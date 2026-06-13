@@ -91,7 +91,15 @@ class StubOutForTesting:
         if old_attribute is not None and isinstance(old_attribute, staticmethod):
             orig_attr = staticmethod(orig_attr)
 
-        self.stubs.append((orig_obj, attr_name, orig_attr))
+        # Record whether orig_obj actually defined the attribute itself. When
+        # it only inherited it (the attribute lives on a base class), setattr
+        # below creates a *new* shadowing entry in orig_obj.__dict__ that was
+        # not there before. smart_unset_all() must delete that shadow rather
+        # than leave it behind, otherwise it would not truly restore the
+        # original definition.
+        had_own_attr = attr_name in orig_obj.__dict__
+
+        self.stubs.append((orig_obj, attr_name, orig_attr, had_own_attr))
         setattr(orig_obj, attr_name, new_attr)
 
     def smart_unset_all(self):
@@ -102,8 +110,16 @@ class StubOutForTesting:
         """
         self.stubs.reverse()
 
-        for args in self.stubs:
-            setattr(*args)
+        for orig_obj, attr_name, orig_attr, had_own_attr in self.stubs:
+            if had_own_attr:
+                setattr(orig_obj, attr_name, orig_attr)
+            else:
+                # The attribute was inherited; remove the shadow we created so
+                # the inherited value is exposed again, as it was originally.
+                try:
+                    delattr(orig_obj, attr_name)
+                except AttributeError:
+                    setattr(orig_obj, attr_name, orig_attr)
 
         self.stubs = []
 

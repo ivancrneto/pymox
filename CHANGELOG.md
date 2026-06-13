@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+-   Fixed `smart_set`/`smart_unset_all` leaving a leftover shadowing attribute on a subclass when the stubbed attribute was inherited from a base class; the inherited definition is now properly restored
+
 ## 1.4.1
 
 -   Fixed tests output when mocking builtin functions
