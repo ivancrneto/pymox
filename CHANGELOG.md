@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+-   Fixed `stubout`/`stubout_class` raising `AttributeError` when given a string object path together with a separate `attr_name`
+-   Fixed the global Mox instance registry leaking instances for the life of the process and re-verifying mocks from earlier tests, which could leak failures across unrelated tests; test teardown now clears the registry
+
 ## 1.4.1
 
 -   Fixed tests output when mocking builtin functions

@@ -55,15 +55,20 @@ class MoxMetaTestBase(type):
             if stubout_obj and isinstance(stubout_obj, stubbingout.StubOutForTesting):
                 cleanup_stubout = True
             try:
-                func(self, *args, **kwargs)
-            finally:
+                try:
+                    func(self, *args, **kwargs)
+                finally:
+                    if cleanup_mox:
+                        mox_obj.unset_stubs()
+                    if cleanup_stubout:
+                        stubout_obj.unset_all()
+                        stubout_obj.smart_unset_all()
                 if cleanup_mox:
-                    mox_obj.unset_stubs()
-                if cleanup_stubout:
-                    stubout_obj.unset_all()
-                    stubout_obj.smart_unset_all()
-            if cleanup_mox:
-                mox_obj.verify_all()
+                    mox_obj.verify_all()
+            finally:
+                # Don't let this test's Mox instances linger in the global
+                # registry, where they would leak and contaminate later tests.
+                Mox.reset_instances()
 
         new_method.__name__ = func.__name__
         new_method.__doc__ = func.__doc__
