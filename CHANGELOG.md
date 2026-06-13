@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+-   `MockObject`, `MockAnything` and `Comparator` instances are now hashable again, so mocks can be used as dict keys or set members by the code under test
+
 ## 1.4.1
 
 -   Fixed tests output when mocking builtin functions
