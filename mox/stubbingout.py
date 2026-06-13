@@ -118,7 +118,7 @@ class StubOutForTesting:
                 # the inherited value is exposed again, as it was originally.
                 try:
                     delattr(orig_obj, attr_name)
-                except AttributeError:
+                except AttributeError:  # pragma: no cover - defensive fallback
                     setattr(orig_obj, attr_name, orig_attr)
 
         self.stubs = []
