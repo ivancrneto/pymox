@@ -46,6 +46,12 @@ pip install pymox
 ```
 <!-- end-install -->
 
+Both import names work and refer to the exact same package (`import pymox is import mox`):
+```python
+import mox      # the original import name
+import pymox    # same thing, matches the PyPI name
+```
+
 ## Cool Stuff
 
 <!-- new-elegant -->

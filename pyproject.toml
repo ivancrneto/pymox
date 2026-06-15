@@ -68,12 +68,12 @@ distance-dirty = "{next_version}-dev{distance}+{vcs}{rev}.d{build_date:%Y%m%d}"
 file = "mox/__version__.py"
 
 [tool.hatch.build.targets.sdist]
-packages = ["mox"]
-include = ["mox/**"]
+packages = ["mox", "pymox"]
+include = ["mox/**", "pymox/**"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["mox"]
-include = ["mox/**"]
+packages = ["mox", "pymox"]
+include = ["mox/**", "pymox/**"]
 
 [tool.pytest.ini_options]
 addopts = [

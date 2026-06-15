@@ -65,6 +65,7 @@ import inspect
 import types
 from collections import deque
 from re import search as re_search
+from typing import Any, Optional
 
 from . import stubbingout
 from .comparators import IsA
@@ -117,7 +118,7 @@ class _MoxManagerMeta(type):
         for mox_instance in list(cls._instances.values()):
             mox_instance.verify_all()
 
-    def forget(cls, instance):
+    def forget(cls, instance: "Mox") -> None:
         """Drop a single Mox instance from the global registry.
 
         Used by the scoped entry points (the ``@mox.patch`` decorator and the
@@ -155,7 +156,7 @@ class Mox(metaclass=_MoxManagerMeta):
         self._mock_objects = []
         self.stubs = stubbingout.StubOutForTesting()
 
-    def create_mock(self, class_to_mock, attrs=None):
+    def create_mock(self, class_to_mock: Any, attrs: Optional[dict] = None) -> "MockObject":
         """Create a new mock object.
 
         Args:
@@ -173,7 +174,7 @@ class Mox(metaclass=_MoxManagerMeta):
         self._mock_objects.append(new_mock)
         return new_mock
 
-    def create_mock_anything(self, description=None):
+    def create_mock_anything(self, description: Optional[str] = None) -> "MockAnything":
         """Create a mock that will accept any method calls.
 
         This does not enforce an interface.
@@ -193,13 +194,13 @@ class Mox(metaclass=_MoxManagerMeta):
 
         return Expect.from_mox(mox_obj=self)
 
-    def replay_all(self):
+    def replay_all(self) -> None:
         """Set all mock objects to replay mode."""
 
         for mock_obj in self._mock_objects:
             mock_obj._replay()
 
-    def verify_all(self):
+    def verify_all(self) -> None:
         """Call verify on all mock objects created."""
 
         exceptions_thrown = []
@@ -213,14 +214,14 @@ class Mox(metaclass=_MoxManagerMeta):
             self.unset_stubs()
             raise exceptions_thrown[0]
 
-    def reset_all(self):
+    def reset_all(self) -> None:
         """Call reset on all mock objects.  This does not unset stubs."""
 
         for mock_obj in self._mock_objects:
             mock_obj._reset()
 
     @resolve_object
-    def stubout(self, obj, attr_name, use_mock_anything=False):
+    def stubout(self, obj: Any, attr_name: str, use_mock_anything: bool = False) -> Any:
         """Replace a method, attribute, etc. with a Mock.
 
         By default the attribute is replaced with a MockObject mirroring the
@@ -250,7 +251,7 @@ class Mox(metaclass=_MoxManagerMeta):
         return stub
 
     @resolve_object
-    def stubout_class(self, obj, attr_name):
+    def stubout_class(self, obj: Any, attr_name: str) -> "_MockObjectFactory":
         """Replace a class with a "mock factory" that will create mock objects.
 
         This is useful if the code-under-test directly instantiates
@@ -301,7 +302,7 @@ class Mox(metaclass=_MoxManagerMeta):
         self.stubs.set(obj, attr_name, factory)
         return factory
 
-    def unset_stubs(self):
+    def unset_stubs(self) -> None:
         """Restore stubs to their original state."""
 
         self.stubs.unset_all()
@@ -317,7 +318,7 @@ class Mox(metaclass=_MoxManagerMeta):
     UnsetStubs = unset_stubs
 
 
-def replay(*args):
+def replay(*args: Any) -> None:
     """Put mocks into Replay mode.
 
     Args:
@@ -331,7 +332,7 @@ def replay(*args):
 Replay = replay
 
 
-def verify(*args):
+def verify(*args: Any) -> None:
     """Verify mocks.
 
     Args:
@@ -345,7 +346,7 @@ def verify(*args):
 Verify = verify
 
 
-def reset(*args):
+def reset(*args: Any) -> None:
     """Reset mocks.
 
     Args:

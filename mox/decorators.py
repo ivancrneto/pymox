@@ -24,11 +24,15 @@ written (top to bottom)::
 # Python imports
 import functools
 import inspect
+from typing import Any, Callable, Optional, TypeVar
 
 
-def _apply(target, attr_name, use_mock_anything, klass, func):
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+def _apply(target: Any, attr_name: Optional[str], use_mock_anything: bool, klass: bool, func: F) -> F:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         # Internal imports
         from mox.mox import Mox
 
@@ -66,10 +70,10 @@ def _apply(target, attr_name, use_mock_anything, klass, func):
     except (TypeError, ValueError):  # pragma: no cover - exotic callables
         pass
 
-    return wrapper
+    return wrapper  # type: ignore[return-value]
 
 
-def patch(target, attr_name=None, *, use_mock_anything=False):
+def patch(target: Any, attr_name: Optional[str] = None, *, use_mock_anything: bool = False) -> Callable[[F], F]:
     """Stub out ``target.attr_name`` for the duration of the decorated test.
 
     Args:
@@ -83,19 +87,19 @@ def patch(target, attr_name=None, *, use_mock_anything=False):
     The created mock is passed to the test as an extra positional argument.
     """
 
-    def decorator(func):
+    def decorator(func: F) -> F:
         return _apply(target, attr_name, use_mock_anything, False, func)
 
     return decorator
 
 
-def patch_class(target, attr_name=None):
+def patch_class(target: Any, attr_name: Optional[str] = None) -> Callable[[F], F]:
     """Like :func:`patch`, but replaces a class with a mock factory.
 
     See ``Mox.stubout_class`` for the factory semantics.
     """
 
-    def decorator(func):
+    def decorator(func: F) -> F:
         return _apply(target, attr_name, False, True, func)
 
     return decorator
