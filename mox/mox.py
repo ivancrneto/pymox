@@ -61,7 +61,6 @@ Suggested usage / workflow:
   my_mox.verify_all()
 """
 # Python imports
-import abc
 import inspect
 import types
 from collections import deque
@@ -140,27 +139,6 @@ class _MoxManagerMeta(type):
 class Mox(metaclass=_MoxManagerMeta):
     """Mox: a factory for creating mock objects."""
 
-    # A list of types that should be stubbed out with MockObjects (as
-    # opposed to MockAnythings).
-    _USE_MOCK_OBJECT = [
-        getattr(types, "ClassType", type),
-        types.FunctionType,
-        getattr(types, "InstanceType", object),
-        types.ModuleType,
-        getattr(types, "ObjectType", object),
-        getattr(types, "TypeType", type),
-        types.MethodType,
-        getattr(types, "UnboundMethodType", types.FunctionType),
-    ]
-
-    # A list of types that may be stubbed out with a MockObjectFactory.
-    _USE_MOCK_FACTORY = [
-        getattr(types, "ClassType", type),
-        getattr(types, "ObjectType", object),
-        getattr(types, "TypeType", type),
-        abc.ABCMeta,
-    ]
-
     def __init__(self):
         """Initialize a new Mox."""
 
@@ -235,10 +213,9 @@ class Mox(metaclass=_MoxManagerMeta):
     def stubout(self, obj, attr_name, use_mock_anything=False):
         """Replace a method, attribute, etc. with a Mock.
 
-        This will replace a class or module with a MockObject, and everything
-        else (method, function, etc) with a MockAnything.  This can be
-        overridden to always use a MockAnything by setting use_mock_anything to
-        True.
+        By default the attribute is replaced with a MockObject mirroring the
+        interface of the attribute being replaced. Pass use_mock_anything=True
+        to replace it with a MockAnything instead, which accepts any call.
 
         Args:
           obj: A Python object (class, module, instance, callable).
@@ -253,13 +230,7 @@ class Mox(metaclass=_MoxManagerMeta):
         if attr_type == MockAnything or attr_type == MockObject:
             raise TypeError("Cannot mock a MockAnything! Did you remember to call unset_stubs in your previous test?")
 
-        if (
-            attr_type in self._USE_MOCK_OBJECT
-            or
-            # isinstance(attr_type, tuple(self._USE_MOCK_OBJECT)) or
-            isinstance(attr_to_replace, object)
-            or inspect.isclass(attr_to_replace)
-        ) and not use_mock_anything:
+        if not use_mock_anything:
             stub = self.create_mock(attr_to_replace)
         else:
             stub = self.create_mock_anything(description="Stub for %s" % attr_to_replace)
