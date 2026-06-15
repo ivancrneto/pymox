@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+-   Python support: dropped end-of-life Python 3.8 and 3.9 (minimum is now 3.10) and added Python 3.13; CI now also runs on PyPy
+-   CI: added a `mypy` type-checking job (the codebase is now mypy-clean), bumped all GitHub Actions to current major versions, and moved the Codecov token out of a committed file into the `CODECOV_TOKEN` repository secret
 -   Tooling: switched linting/formatting to [Ruff](https://docs.astral.sh/ruff/) (replacing flake8 and black; isort is retained for its import-section headers), refreshed all pre-commit hooks to current versions, and added a `Makefile`, `CONTRIBUTING.md`, and GitHub issue/PR templates. Test runs are no longer forced to `-s -vv` (pass them on the command line when wanted)
 -   `import pymox` now works and refers to the exact same package as `import mox` (`pymox is mox`), fixing the long-standing mismatch between the PyPI/distribution name (`pymox`) and the import name (`mox`)
 -   The package now ships a `py.typed` marker and type hints on the public API (the `Mox` lifecycle methods, `stubout`/`stubout_class`, `@mox.patch`, and the module-level `replay`/`verify`/`reset`), so type checkers and editors pick up pymox's types

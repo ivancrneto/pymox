@@ -8,7 +8,7 @@ name = "pymox"
 dynamic = ["version"]
 description = "Python mocking on steroids"
 readme = "README.md"
-requires-python = ">=3.8,<4"
+requires-python = ">=3.10,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Ivan Neto", email = "ivan.cr.neto@gmail.com" }]
 keywords = ["mox", "mock", "test", "mocking", "unittest", "pymox"]
@@ -20,11 +20,10 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Software Development :: Testing",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -45,6 +44,7 @@ lint = [
     "pre-commit>=3.5",
     "ruff>=0.12,<0.13",
     "isort>=5.13,<6",
+    "mypy>=1.8",
 ]
 
 [project.urls]
@@ -94,9 +94,16 @@ python_files = "*test*.py"
 omit = ["*__version__.py"]
 
 
+[tool.mypy]
+python_version = "3.10"
+files = ["mox", "pymox"]
+ignore_missing_imports = true
+exclude = ['mox/__version__\.py']
+
+
 [tool.ruff]
 line-length = 120
-target-version = "py38"
+target-version = "py310"
 # Ruff replaces black (formatting) and flake8 (linting). Import sorting and its
 # "# Python imports" / "# Internal imports" section headers are still handled by
 # isort below, because Ruff's import sorter does not emit those header comments.

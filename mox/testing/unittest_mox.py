@@ -81,7 +81,7 @@ class MoxMetaTestBase(type):
 _MoxTestBase = MoxMetaTestBase("_MoxTestBase", (unittest.TestCase,), {})
 
 
-class MoxTestBase(_MoxTestBase):
+class MoxTestBase(_MoxTestBase):  # type: ignore[valid-type,misc]  # base built dynamically via the metaclass
     # class MoxTestBase(unittest.TestCase, metaclass=MoxMetaTestBase):
     """Convenience test class to make stubbing easier.
     Sets up a "mox" attribute which is an instance of Mox (any mox tests will
