@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+-   Removed dead, always-true type-selection logic in `stubout` (and the unused `_USE_MOCK_OBJECT`/`_USE_MOCK_FACTORY` tables); clarified its docstring to match actual behavior (MockObject by default, MockAnything with `use_mock_anything=True`)
+
 ## 1.4.1
 
 -   Fixed tests output when mocking builtin functions
