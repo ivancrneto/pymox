@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+-   Replaced the Python 2-only `__nonzero__` on mocks with `__bool__` (behavior unchanged)
+-   Removed the empty, unused root `requirements.txt` and its `MANIFEST.in` entry
+
 ## 1.4.1
 
 -   Fixed tests output when mocking builtin functions
