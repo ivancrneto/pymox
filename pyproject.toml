@@ -83,6 +83,11 @@ addopts = [
 ]
 python_files = "*test*.py"
 
+[tool.coverage.run]
+# versioningit writes this file at build/install time; it is generated, not
+# source, so it should not count toward coverage.
+omit = ["mox/__version__.py"]
+
 
 [tool.black]
 line-length = 120
