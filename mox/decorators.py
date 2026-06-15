@@ -66,7 +66,7 @@ def _apply(target: Any, attr_name: Optional[str], use_mock_anything: bool, klass
         signature = inspect.signature(func)
         parameters = list(signature.parameters.values())
         if parameters:
-            wrapper.__signature__ = signature.replace(parameters=parameters[:-1])
+            wrapper.__signature__ = signature.replace(parameters=parameters[:-1])  # type: ignore[attr-defined]
     except (TypeError, ValueError):  # pragma: no cover - exotic callables
         pass
 

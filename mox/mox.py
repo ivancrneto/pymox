@@ -85,7 +85,7 @@ from .helpers import resolve_object
 
 
 class _MoxManagerMeta(type):
-    _instances = {}
+    _instances: dict = {}
 
     def __call__(cls, *args, **kwargs):
         instance = super().__call__(*args, **kwargs)
@@ -242,6 +242,7 @@ class Mox(metaclass=_MoxManagerMeta):
         if attr_type == MockAnything or attr_type == MockObject:
             raise TypeError("Cannot mock a MockAnything! Did you remember to call unset_stubs in your previous test?")
 
+        stub: Any
         if not use_mock_anything:
             stub = self.create_mock(attr_to_replace)
         else:
@@ -842,7 +843,7 @@ class MockObject(MockAnything, object):
             Mox.unset_stubs_for_id(self._mox_id)
             raise e
 
-    @property
+    @property  # type: ignore[misc]  # intentionally shadows __class__ so isinstance() sees the mocked type
     def __class__(self):
         """Return the class that is being mocked."""
 

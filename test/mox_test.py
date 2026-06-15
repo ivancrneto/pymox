@@ -3426,10 +3426,13 @@ class MoxContextManagerTest:
 
         method_type = type(test_obj.valid_call)
         method_type_other = type(test_obj.other_valid_call)
-        with mox.stubout.many(
-            ["test.mox_test_helper.TestClass.valid_call", True],
-            ["test.mox_test_helper.TestClass.other_valid_call", True],
-        ) as (mock_valid, mock_other_valid), mox.expect:
+        with (
+            mox.stubout.many(
+                ["test.mox_test_helper.TestClass.valid_call", True],
+                ["test.mox_test_helper.TestClass.other_valid_call", True],
+            ) as (mock_valid, mock_other_valid),
+            mox.expect,
+        ):
             mock_valid().returns("foo")
             mock_other_valid().returns("bar")
 
