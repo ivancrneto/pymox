@@ -8,21 +8,10 @@ name = "pymox"
 dynamic = ["version"]
 description = "Python mocking on steroids"
 readme = "README.md"
-long-description-content-type = "text/markdown"
-
-
-[tool.poetry]
-name = "pymox"
-description = "Mock object framework"
-packages = [
-    {include = "mox"},
-    {include = "mox/testing"}
-]
-version = "0.0.0"  # DO NOT CHANGE VERSION HERE
-authors = ["Ivan Neto <ivan.cr.neto@gmail.com>"]
-license = "Apache License, Version 2.0"
-homepage = "http://pymox.rtfd.io"
-repository = "https://github.com/ivancrneto/pymox"
+requires-python = ">=3.8,<4"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Ivan Neto", email = "ivan.cr.neto@gmail.com" }]
+keywords = ["mox", "mock", "test", "mocking", "unittest", "pymox"]
 classifiers = [
     "Environment :: Console",
     "Development Status :: 5 - Production/Stable",
@@ -35,32 +24,28 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Software Development :: Testing",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
-    "Topic :: Utilities"
+    "Topic :: Utilities",
 ]
-keywords = [
-    "mox", "mock", "test", "mocking", "unittest", "pymox",
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "coverage>=7.2,<8",
+    "pytest>=7.4,<8",
+    "pytest-beeprint>=0.1.2,<0.2",
+    "pytest-cov>=4.1.0,<5",
+    "pytest-xdist>=3.3.1,<4",
 ]
-readme = "README.md"
 
-
-[tool.poetry.dependencies]
-hatch = { version = "^1.9.1", python = ">=3.9,<4" }
-hatchling = { version = "^1.21.0", python = ">=3.8,<4" }
-hatch-semver = { version = "^1.0.1",  python = ">=3.9,<4" }
-versioningit = { version = "^3.0.0", python = ">=3.8,<4" }
-python = ">=3.8, <4"
-build = "^1.0.3"
-
-[tool.poetry.group.dev.dependencies]
-coverage = "^7.2"
-pytest = "^7.4"
-pytest-beeprint = "^0.1.2"
-pytest-cov = "^4.1.0"
-pytest-xdist = "^3.3.1"
+[project.urls]
+Homepage = "http://pymox.rtfd.io"
+Documentation = "http://pymox.rtfd.io"
+Repository = "https://github.com/ivancrneto/pymox"
 
 [tool.hatch.version]
 source = "versioningit"
