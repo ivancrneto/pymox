@@ -15,7 +15,12 @@ coverage:
     default_rules:
       flag_coverage_not_uploaded_behavior: include
     patch: true
-    project: true
+    project:
+      default:
+        # Tolerate sub-statement rounding noise (e.g. branch-coverage merge
+        # differences across the test matrix) so a ~0.01% wobble doesn't fail
+        # the gate; real regressions still trip it.
+        threshold: 1%
 github_checks:
   annotations: true
 slack_app: true

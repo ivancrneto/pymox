@@ -8,6 +8,11 @@
 -   Fixed `smart_set`/`smart_unset_all` leaving a leftover shadowing attribute on a subclass when the stubbed attribute was inherited from a base class; the inherited definition is now properly restored
 -   `StubOutForTesting.__del__` no longer raises during interpreter shutdown; cleanup is now best-effort
 -   Modernized internal `super(Class, self)` calls to the argument-less `super()` form
+-   Fixed `with_side_effects` overriding an explicit `and_return(None)`/`returns(None)`; an explicitly configured `None` return value is now respected instead of being replaced by the side effect's return value
+-   Replaced the Python 2-only `__nonzero__` on mocks with `__bool__` (behavior unchanged)
+-   Removed the empty, unused root `requirements.txt` and its `MANIFEST.in` entry
+-   Removed dead, always-true type-selection logic in `stubout` (and the unused `_USE_MOCK_OBJECT`/`_USE_MOCK_FACTORY` tables); clarified its docstring to match actual behavior (MockObject by default, MockAnything with `use_mock_anything=True`)
+-   Migrated packaging metadata off the unused `[tool.poetry]` block into PEP 621 `[project]`, so the hatchling-built package now actually ships its authors, license, keywords, classifiers and URLs; CI and the release workflow now use `pip`/`python -m build` instead of poetry
 
 ## 1.4.1
 
