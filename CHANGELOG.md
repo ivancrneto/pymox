@@ -5,6 +5,7 @@
 -   `MockObject`, `MockAnything` and `Comparator` instances are now hashable again, so mocks can be used as dict keys or set members by the code under test
 -   Fixed `stubout`/`stubout_class` raising `AttributeError` when given a string object path together with a separate `attr_name`
 -   Fixed the global Mox instance registry leaking instances for the life of the process and re-verifying mocks from earlier tests, which could leak failures across unrelated tests; test teardown now clears the registry
+-   Fixed `smart_set`/`smart_unset_all` leaving a leftover shadowing attribute on a subclass when the stubbed attribute was inherited from a base class; the inherited definition is now properly restored
 -   `StubOutForTesting.__del__` no longer raises during interpreter shutdown; cleanup is now best-effort
 -   Modernized internal `super(Class, self)` calls to the argument-less `super()` form
 
