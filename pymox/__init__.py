@@ -13,6 +13,7 @@ import sys
 # Internal imports
 import mox
 
+
 # Make `pymox` *be* `mox` so there is a single set of classes, a single global
 # Mox registry, and a single copy of the pytest plugin (no duplicate fixtures).
 sys.modules[__name__] = mox

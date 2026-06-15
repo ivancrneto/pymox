@@ -26,6 +26,7 @@ import functools
 import inspect
 from typing import Any, Callable, Optional, TypeVar
 
+
 F = TypeVar("F", bound=Callable[..., Any])
 
 

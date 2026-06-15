@@ -6,12 +6,14 @@ import mox.testing.pytest_mox  # noqa: F401  (ensure the submodule is loaded)
 
 
 def test_pymox_is_mox():
+    # Internal imports
     import pymox
 
     assert pymox is mox
 
 
 def test_pymox_exposes_public_api():
+    # Internal imports
     import pymox
 
     for name in ("Mox", "patch", "patch_class", "stubout", "expect", "create", "is_a", "replay", "verify"):
@@ -19,6 +21,7 @@ def test_pymox_exposes_public_api():
 
 
 def test_pymox_submodules_resolve_to_mox():
+    # Internal imports
     import pymox
 
     # Attribute access (the way code actually reaches submodules) returns the
@@ -29,6 +32,7 @@ def test_pymox_submodules_resolve_to_mox():
 
 
 def test_py_typed_marker_is_shipped():
+    # Python imports
     import os
 
     marker = os.path.join(os.path.dirname(mox.__file__), "py.typed")
