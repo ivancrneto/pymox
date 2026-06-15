@@ -6,6 +6,7 @@
 -   Fixed `stubout`/`stubout_class` raising `AttributeError` when given a string object path together with a separate `attr_name`
 -   Fixed the global Mox instance registry leaking instances for the life of the process and re-verifying mocks from earlier tests, which could leak failures across unrelated tests; test teardown now clears the registry
 -   Fixed `smart_set`/`smart_unset_all` leaving a leftover shadowing attribute on a subclass when the stubbed attribute was inherited from a base class; the inherited definition is now properly restored
+-   Fixed `with_side_effects` overriding an explicit `and_return(None)`/`returns(None)`; an explicitly configured `None` return value is now respected instead of being replaced by the side effect's return value
 -   Replaced the Python 2-only `__nonzero__` on mocks with `__bool__` (behavior unchanged)
 -   Removed the empty, unused root `requirements.txt` and its `MANIFEST.in` entry
 -   Removed dead, always-true type-selection logic in `stubout` (and the unused `_USE_MOCK_OBJECT`/`_USE_MOCK_FACTORY` tables); clarified its docstring to match actual behavior (MockObject by default, MockAnything with `use_mock_anything=True`)
