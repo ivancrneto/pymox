@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+-   `MockObject`, `MockAnything` and `Comparator` instances are now hashable again, so mocks can be used as dict keys or set members by the code under test
+-   Fixed `stubout`/`stubout_class` raising `AttributeError` when given a string object path together with a separate `attr_name`
+-   Fixed the global Mox instance registry leaking instances for the life of the process and re-verifying mocks from earlier tests, which could leak failures across unrelated tests; test teardown now clears the registry
 -   Fixed `with_side_effects` overriding an explicit `and_return(None)`/`returns(None)`; an explicitly configured `None` return value is now respected instead of being replaced by the side effect's return value
 
 ## 1.4.1

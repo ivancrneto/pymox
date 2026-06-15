@@ -415,6 +415,12 @@ class IsATest(unittest.TestCase):
         stringIO = io.StringIO()
         self.assertTrue(isA == stringIO)
 
+    def test_is_hashable(self):
+        """A comparator must remain hashable despite overriding __eq__."""
+        comparator = mox.IsA(str)
+        self.assertEqual(hash(comparator), id(comparator))
+        self.assertIn(comparator, {comparator})
+
 
 class IsAlmostTest(unittest.TestCase):
     """Verify IsAlmost correctly checks equality of floating point numbers."""
@@ -682,6 +688,14 @@ class MockAnythingTest(unittest.TestCase):
     def test_repr(self):
         """Calling repr on a MockAnything instance must work."""
         self.assertEqual("<MockAnything instance>", repr(self.mock_object))
+
+    def test_is_hashable(self):
+        """A MockAnything must be usable as a dict key / set member."""
+        other = mox.MockAnything()
+        self.assertEqual(hash(self.mock_object), id(self.mock_object))
+        mapping = {self.mock_object: 1, other: 2}
+        self.assertEqual(mapping[self.mock_object], 1)
+        self.assertIn(other, {self.mock_object, other})
 
     def test_can_mock_str(self):
         self.mock_object.__str__().returns("foo")
@@ -971,6 +985,14 @@ class MockObjectTest(unittest.TestCase):
     def setUp(self):
         self.mock_object = mox.MockObject(TestClass)
         self.mock = mox.Mox()
+
+    def test_is_hashable(self):
+        """A MockObject must be usable as a dict key / set member."""
+        other = mox.MockObject(TestClass)
+        self.assertEqual(hash(self.mock_object), id(self.mock_object))
+        mapping = {self.mock_object: 1, other: 2}
+        self.assertEqual(mapping[self.mock_object], 1)
+        self.assertIn(other, {self.mock_object, other})
 
     def test_description(self):
         self.assertEqual(self.mock_object._description, "TestClass")
