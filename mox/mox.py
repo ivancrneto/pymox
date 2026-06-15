@@ -86,7 +86,7 @@ class _MoxManagerMeta(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-        instance = super(_MoxManagerMeta, cls).__call__(*args, **kwargs)
+        instance = super().__call__(*args, **kwargs)
         cls.track(instance)
         return instance
 
@@ -889,7 +889,7 @@ class _MockObjectFactory(MockObject):
         """Verify that all mocks have been created."""
         if self._instance_queue:
             raise ExpectedMockCreationError(self._instance_queue)
-        super(_MockObjectFactory, self)._verify()
+        super()._verify()
 
     _Verify = _verify
 

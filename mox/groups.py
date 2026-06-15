@@ -45,7 +45,7 @@ class UnorderedGroup(MethodGroup):
     """
 
     def __init__(self, group_name, exception_list):
-        super(UnorderedGroup, self).__init__(group_name, exception_list)
+        super().__init__(group_name, exception_list)
         self._methods = []
 
     def __str__(self):
@@ -123,7 +123,7 @@ class MultipleTimesGroup(MethodGroup):
     """
 
     def __init__(self, group_name, exception_list):
-        super(MultipleTimesGroup, self).__init__(group_name, exception_list)
+        super().__init__(group_name, exception_list)
         self._methods = set()
         self._methods_left = set()
 

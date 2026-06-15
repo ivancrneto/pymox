@@ -95,6 +95,6 @@ class MoxTestBase(_MoxTestBase):
         # Internal imports
         from mox import Mox, stubbingout
 
-        super(MoxTestBase, self).setUp()
+        super().setUp()
         self.mox = Mox()
         self.stubs = stubbingout.StubOutForTesting()
