@@ -41,6 +41,11 @@ dev = [
     "pytest-cov>=4.1.0,<5",
     "pytest-xdist>=3.3.1,<4",
 ]
+lint = [
+    "pre-commit>=3.5",
+    "ruff>=0.12,<0.13",
+    "isort>=5.13,<6",
+]
 
 [project.urls]
 Homepage = "http://pymox.rtfd.io"
@@ -76,11 +81,10 @@ packages = ["mox", "pymox"]
 include = ["mox/**", "pymox/**"]
 
 [tool.pytest.ini_options]
-addopts = [
-    "-s",
-    "-vv",
-    "--ignore-glob=*_helper.py"
-]
+# Keep default output quiet/captured; pass -vv, -s or -n auto (pytest-xdist) on
+# the command line when you want them. *_helper.py modules are imported by the
+# tests, not collected as tests themselves.
+addopts = ["--ignore-glob=*_helper.py"]
 python_files = "*test*.py"
 
 [tool.coverage.run]
@@ -90,9 +94,22 @@ python_files = "*test*.py"
 omit = ["*__version__.py"]
 
 
-[tool.black]
+[tool.ruff]
 line-length = 120
-target-version = [ "py38" ]
+target-version = "py38"
+# Ruff replaces black (formatting) and flake8 (linting). Import sorting and its
+# "# Python imports" / "# Internal imports" section headers are still handled by
+# isort below, because Ruff's import sorter does not emit those header comments.
+extend-exclude = ["mox/__version__.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+# E203 (whitespace before ':') conflicts with how the formatter spaces slices.
+ignore = ["E203"]
+
+[tool.ruff.format]
+# Keep the existing double-quote, trailing-comma style black produced.
+quote-style = "double"
 
 
 [tool.isort]

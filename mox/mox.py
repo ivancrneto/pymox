@@ -60,6 +60,7 @@ Suggested usage / workflow:
   # Verify all methods were called as expected
   my_mox.verify_all()
 """
+
 # Python imports
 import inspect
 import types
@@ -952,7 +953,7 @@ class MethodSignatureChecker(object):
             self._default_args = []
         else:
             self._required_args = self._args[: -len(defaults)]
-            self._default_args = self._args[-len(defaults):]
+            self._default_args = self._args[-len(defaults) :]
 
     def _record_argument_given(self, arg_name, arg_status):
         """Mark an argument as being given.

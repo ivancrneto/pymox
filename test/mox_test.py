@@ -2856,9 +2856,7 @@ class MoxTest(unittest.TestCase):
             foo.getbar().show_me_the_money()
         except AttributeError as e:
             self.assertEqual(
-                'MockMethod has no attribute "show_me_the_money". '
-                "Did you remember to put your mocks in replay "
-                "mode?",
+                'MockMethod has no attribute "show_me_the_money". Did you remember to put your mocks in replay mode?',
                 str(e),
             )
 
@@ -3989,7 +3987,7 @@ class MoxContextManagerTest:
             foo.getbar().show_me_the_money()
         except AttributeError as e:
             assert (
-                'MockMethod has no attribute "show_me_the_money". Did you remember to ' "put your mocks in replay mode?"
+                'MockMethod has no attribute "show_me_the_money". Did you remember to put your mocks in replay mode?'
             ) == str(e)
 
     def test_swallowed_unknown_method_call(self):
