@@ -45,6 +45,47 @@ class StubOutForTestingTest(unittest.TestCase):
 
         self.mox.verify_all()
 
+    def testSmartUnsetRestoresInheritedAttribute(self):
+        """smart_unset_all must not leave a shadowing attribute behind when the
+        stubbed attribute was inherited from a base class."""
+
+        class Base:
+            def method(self):
+                return "base"
+
+        class Derived(Base):
+            pass
+
+        self.assertNotIn("method", Derived.__dict__)
+
+        stubber = stubbingout.stubout()
+        stubber.smart_set(Derived, "method", lambda self: "stubbed")
+        self.assertEqual(Derived().method(), "stubbed")
+
+        stubber.smart_unset_all()
+
+        # The shadow we created on Derived must be gone, and the inherited
+        # definition exposed again.
+        self.assertNotIn("method", Derived.__dict__)
+        self.assertEqual(Derived().method(), "base")
+
+    def testSmartUnsetRestoresOwnAttribute(self):
+        """smart_unset_all must restore an attribute defined on the class
+        itself to its original value."""
+
+        class Sample:
+            def method(self):
+                return "original"
+
+        stubber = stubbingout.stubout()
+        stubber.smart_set(Sample, "method", lambda self: "stubbed")
+        self.assertEqual(Sample().method(), "stubbed")
+
+        stubber.smart_unset_all()
+
+        self.assertIn("method", Sample.__dict__)
+        self.assertEqual(Sample().method(), "original")
+
 
 if __name__ == "__main__":
     unittest.main()
