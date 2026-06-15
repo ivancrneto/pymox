@@ -88,25 +88,53 @@ class _MoxManagerMeta(type):
 
     def __call__(cls, *args, **kwargs):
         instance = super(_MoxManagerMeta, cls).__call__(*args, **kwargs)
-        cls._instances[id(instance)] = instance
+        cls.track(instance)
         return instance
 
+    def track(cls, instance):
+        """Register a Mox instance in the global registry.
+
+        Construction registers automatically; the context-manager singletons
+        (``mox.create``) also call this on each use so they re-register after a
+        test teardown has cleared the registry.
+        """
+        cls._instances[id(instance)] = instance
+
     def unset_stubs_for_id(cls, mox_id):
-        mox_instance = cls._instances[mox_id]
-        mox_instance.unset_stubs()
+        mox_instance = cls._instances.get(mox_id)
+        if mox_instance is not None:
+            mox_instance.unset_stubs()
 
     def global_unset_stubs(cls):
-        for mox_instance in cls._instances.values():
+        for mox_instance in list(cls._instances.values()):
             mox_instance.stubs.unset_all()
             mox_instance.stubs.smart_unset_all()
 
     def global_replay(cls):
-        for mox_instance in cls._instances.values():
+        for mox_instance in list(cls._instances.values()):
             mox_instance.replay_all()
 
     def global_verify(cls):
-        for mox_instance in cls._instances.values():
+        for mox_instance in list(cls._instances.values()):
             mox_instance.verify_all()
+
+    def reset_instances(cls):
+        """Forget all tracked Mox instances.
+
+        The context-manager API (``mox.expect``) and the pytest plugin operate
+        on every registered Mox instance via ``global_*``. Without clearing the
+        registry between tests, those instances would live for the whole
+        process (a memory leak) and - worse - a later test's global teardown
+        would re-verify mocks recorded by earlier tests, leaking failures
+        across unrelated tests. Test harnesses call this once their own
+        teardown is complete.
+        """
+        # Also drop accumulated mocks from the long-lived context-manager
+        # singletons (e.g. mox.create's shared Mox), so a prior test's leftover
+        # expectations can't be re-verified - and fail - during a later test.
+        for instance in cls._instances.values():
+            instance._mock_objects.clear()
+        cls._instances.clear()
 
 
 class Mox(metaclass=_MoxManagerMeta):

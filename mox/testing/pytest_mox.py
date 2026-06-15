@@ -23,6 +23,11 @@ def pytest_runtest_teardown(item):
     if cleanup_mox:
         mox_verify.unset_stubs()
 
-    mox.Mox.global_unset_stubs()
-    if cleanup_mox:
-        mox.Mox.global_verify()
+    try:
+        mox.Mox.global_unset_stubs()
+        if cleanup_mox:
+            mox.Mox.global_verify()
+    finally:
+        # Forget this test's Mox instances so they neither leak for the life of
+        # the process nor get re-verified during a later test's teardown.
+        mox.Mox.reset_instances()

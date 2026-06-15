@@ -122,7 +122,7 @@ def resolve_object(func):
             attr_name = kwargs.pop("attr_name")
 
         if isinstance(obj, str):
-            path = f"{obj.attr_name}" if attr_name else obj
+            path = f"{obj}.{attr_name}" if attr_name else obj
             obj, attr_name = import_object(path)
             obj = obj()
 

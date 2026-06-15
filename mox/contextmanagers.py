@@ -5,9 +5,13 @@ class Create:
         self.m = Mox()
 
     def __call__(self, class_to_mock, attrs=None):
+        # Re-register in case a previous test's teardown cleared the registry;
+        # mox.expect relies on this shared Mox being globally tracked.
+        type(self.m).track(self.m)
         return self.m.create_mock(class_to_mock, attrs)
 
     def any(self, description=None):
+        type(self.m).track(self.m)
         return self.m.create_mock_anything(description=description)
 
 
