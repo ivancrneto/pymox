@@ -54,7 +54,7 @@ def _resolve_name(name):  # pragma: no cover
         import re
 
         dotted_words = r"(?!\d)(\w+)(\.(?!\d)(\w+))*"
-        _NAME_PATTERN = re.compile(f"^(?P<pkg>{dotted_words})" f"(?P<cln>:(?P<obj>{dotted_words})?)?$", re.UNICODE)
+        _NAME_PATTERN = re.compile(f"^(?P<pkg>{dotted_words})(?P<cln>:(?P<obj>{dotted_words})?)?$", re.UNICODE)
 
     m = _NAME_PATTERN.match(name)
     if not m:

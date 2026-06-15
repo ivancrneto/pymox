@@ -104,7 +104,7 @@ class PrivateAttributeError(Error):
         self._attr = attr
 
     def __str__(self):
-        return "Attribute '%s' is private and should not be available in a " " mock object." % self._attr
+        return "Attribute '%s' is private and should not be available in a  mock object." % self._attr
 
 
 class ExpectedMockCreationError(Error):
