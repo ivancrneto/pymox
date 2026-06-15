@@ -433,10 +433,10 @@ class MockAnything:
             description=self._description,
         )
 
-    def __nonzero__(self):
-        """Return 1 for nonzero so the mock can be used as a conditional."""
+    def __bool__(self):
+        """Return True so the mock can be used as a conditional."""
 
-        return 1
+        return True
 
     def __eq__(self, rhs):
         """Provide custom logic to compare objects."""
