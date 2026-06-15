@@ -28,8 +28,11 @@ You got it 😉!
 
 Coming Soon
 * Async support
-* Decorator
-* Ignore args
+
+Already here
+* ~~Decorator~~ (`@mox.patch`)
+* ~~Pytest fixture~~ (the `mox` fixture)
+* ~~Ignore args~~ (`mox.ignore_arg`)
 * ~~String imports~~
 
 ## How
@@ -88,6 +91,61 @@ class TestOs:
         assert os.getcwd() == '/mox/path'
         mox.verify(m_getcwd)
 ```
+### No Context Manager? No Problem
+
+Prefer not to use a `with` block? The same expectations can be set up with a
+pytest fixture or a decorator — both restore the stubs and verify the mocks for
+you when the test finishes.
+
+Using the `mox` pytest fixture (no `with`, no explicit `verify`):
+```python
+# conftest.py
+pytest_plugins = ("mox.testing.pytest_mox",)
+
+
+# test.py
+import os
+
+
+def test_getcwd(mox):
+    m_getcwd = mox.stubout(os, 'getcwd')
+    m_getcwd().returns('/mox/path')
+    mox.replay(m_getcwd)
+
+    assert os.getcwd() == '/mox/path'
+    # stubs restored + mocks verified automatically on a passing test
+```
+The `mox` fixture is a managed `Mox`, and also exposes the module helpers, so
+`mox.stubout`, `mox.replay`, `mox.verify` and comparators like `mox.is_a` are
+all reachable through that single name.
+
+Using the `@mox.patch` decorator (à la `unittest.mock.patch`):
+```python
+import os
+import mox
+
+
+@mox.patch(os, 'getcwd')
+def test_getcwd(m_getcwd):
+    m_getcwd().returns('/mox/path')
+    mox.replay(m_getcwd)
+
+    assert os.getcwd() == '/mox/path'
+    # stubs restored + m_getcwd verified automatically
+
+
+# decorators stack; mocks are injected top-to-bottom
+@mox.patch(os, 'getcwd')
+@mox.patch(os, 'cpu_count')
+def test_two(m_getcwd, m_cpu_count):
+    m_getcwd().returns('/mox/path')
+    m_cpu_count().returns(8)
+    mox.replay(m_getcwd, m_cpu_count)
+
+    assert os.getcwd() == '/mox/path'
+    assert os.cpu_count() == 8
+```
+
 ### Dict Access
 ```python
 class TestDict:

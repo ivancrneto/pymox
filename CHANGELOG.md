@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+-   Added `@mox.patch` (and `@mox.patch_class`) decorators for context-manager-free stubbing, à la `unittest.mock.patch`: the mock is injected as an argument, stubs are restored, and mocks are verified automatically on a passing test. Decorators stack and inject mocks top-to-bottom
+-   The pytest `mox` fixture is now functional: it yields a managed `Mox` (also exposing the module-level helpers and comparators), restores stubs, and verifies mocks automatically when a test passes - without masking a failing test's real error. `mox_verify` is kept as a backward-compatible alias
+-   `mox.replay(factory)` now also puts the instances a `stubout_class` factory produced into replay mode, so a factory can be replayed with a single call
+
 ## 1.5.0
 
 -   `MockObject`, `MockAnything` and `Comparator` instances are now hashable again, so mocks can be used as dict keys or set members by the code under test

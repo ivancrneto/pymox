@@ -6,20 +6,17 @@ import mox
 from mox.testing import pytest_mox
 
 
-class _FakeRequest:
-    """Minimal stand-in for a pytest request object."""
-
-    def __init__(self, mox_obj):
-        self._mox_obj = mox_obj
-
-    def getfixturevalue(self, name):
-        assert name == "mox_verify"
-        return self._mox_obj
+def _drive_wrapper(gen):
+    """Run a hookwrapper generator: advance to the yield, then to completion."""
+    next(gen)
+    try:
+        next(gen)
+    except StopIteration:
+        pass
 
 
 class _FakeItem:
-    def __init__(self, funcargs):
-        self.funcargs = funcargs
+    pass
 
 
 class PytestPluginTeardownTest(unittest.TestCase):
@@ -29,9 +26,9 @@ class PytestPluginTeardownTest(unittest.TestCase):
         # Make sure we never leak instances into other tests.
         mox.Mox.reset_instances()
 
-    def test_teardown_with_mox_verify_fixture_unsets_and_verifies(self):
-        """When the mox_verify fixture yields a Mox, teardown must unset its
-        stubs, verify it, and clear the global registry."""
+    def test_teardown_unsets_stubs_and_clears_registry(self):
+        """The teardown wrapper must unset global stubs and clear the registry,
+        even for a Mox created by the context-manager API."""
 
         mox_obj = mox.Mox()
         mocked = mox_obj.create_mock_anything()
@@ -39,24 +36,33 @@ class PytestPluginTeardownTest(unittest.TestCase):
         mox.replay(mocked)
         mocked.do_something()  # satisfy it
 
-        item = _FakeItem({"request": _FakeRequest(mox_obj)})
+        self.assertGreater(len(mox.Mox._instances), 0)
 
-        # Should run global_unset_stubs + global_verify (cleanup_mox branch)
-        # without raising, then clear the registry in the finally block.
-        pytest_mox.pytest_runtest_teardown(item)
+        _drive_wrapper(pytest_mox.pytest_runtest_teardown(_FakeItem()))
 
         self.assertEqual(len(mox.Mox._instances), 0)
 
-    def test_teardown_without_request_still_clears_registry(self):
-        """Teardown for a test that uses no fixtures must still clear the
-        global registry (and not raise)."""
+    def test_teardown_clears_registry_with_no_instances(self):
+        """Teardown must be a no-op (and not raise) when nothing is registered."""
 
-        mox.Mox()  # registered in the global registry
-        item = _FakeItem({})
-
-        pytest_mox.pytest_runtest_teardown(item)
-
+        mox.Mox.reset_instances()
+        _drive_wrapper(pytest_mox.pytest_runtest_teardown(_FakeItem()))
         self.assertEqual(len(mox.Mox._instances), 0)
+
+
+class PytestPluginFailedHelperTest(unittest.TestCase):
+    """Exercise the per-phase failure tracking the ``mox`` fixture relies on."""
+
+    def test_failed_helper_reads_recorded_phase_flags(self):
+        node = _FakeItem()
+        self.assertFalse(pytest_mox._test_failed(node))
+
+        node._mox_call_failed = True
+        self.assertTrue(pytest_mox._test_failed(node))
+
+        node._mox_call_failed = False
+        node._mox_setup_failed = True
+        self.assertTrue(pytest_mox._test_failed(node))
 
 
 if __name__ == "__main__":

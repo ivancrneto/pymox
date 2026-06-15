@@ -1,1 +1,1 @@
-pytest_plugins = ("mox.testing.pytest_mox",)
+pytest_plugins = ("mox.testing.pytest_mox", "pytester")
