@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.5.0
 
 -   `MockObject`, `MockAnything` and `Comparator` instances are now hashable again, so mocks can be used as dict keys or set members by the code under test
 -   Fixed `stubout`/`stubout_class` raising `AttributeError` when given a string object path together with a separate `attr_name`
