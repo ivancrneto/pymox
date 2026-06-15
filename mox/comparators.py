@@ -42,6 +42,11 @@ class Comparator:
     def __ne__(self, rhs):
         return not self.equals(rhs)
 
+    def __hash__(self):
+        # __eq__ is overridden, which otherwise makes comparators unhashable in
+        # Python 3.  Hash by identity so comparators can be used in sets/dicts.
+        return id(self)
+
 
 class Is(Comparator):
     """Comparison class used to check identity, instead of equality."""

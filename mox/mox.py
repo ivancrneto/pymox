@@ -481,6 +481,17 @@ class MockAnything:
 
         return not self == rhs
 
+    def __hash__(self):
+        """Hash by identity.
+
+        __eq__ is overridden (and is value-based), which by default makes
+        instances unhashable in Python 3.  Mocks frequently stand in for
+        objects that code-under-test uses as dict keys or set members, so we
+        restore hashability using object identity - the same approach taken by
+        MockMethod.
+        """
+        return id(self)
+
     @property
     def _expect(self):
         # Internal imports
@@ -667,6 +678,10 @@ class MockObject(MockAnything, object):
             and self._replay_mode == rhs._replay_mode
             and self._expected_calls_queue == rhs._expected_calls_queue
         )
+
+    # Defining __eq__ resets __hash__ to None in this class, so restore the
+    # identity-based hash inherited from MockAnything.
+    __hash__ = MockAnything.__hash__
 
     def __setitem__(self, key, value):
         """Provide custom logic for mocking classes that support item
