@@ -85,8 +85,9 @@ python_files = "*test*.py"
 
 [tool.coverage.run]
 # versioningit writes this file at build/install time; it is generated, not
-# source, so it should not count toward coverage.
-omit = ["mox/__version__.py"]
+# source, so it should not count toward coverage. The glob matches both the
+# relative path and the absolute path recorded under an editable install.
+omit = ["*__version__.py"]
 
 
 [tool.black]
