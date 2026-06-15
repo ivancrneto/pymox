@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+-   `import pymox` now works and refers to the exact same package as `import mox` (`pymox is mox`), fixing the long-standing mismatch between the PyPI/distribution name (`pymox`) and the import name (`mox`)
+-   The package now ships a `py.typed` marker and type hints on the public API (the `Mox` lifecycle methods, `stubout`/`stubout_class`, `@mox.patch`, and the module-level `replay`/`verify`/`reset`), so type checkers and editors pick up pymox's types
 -   Added `@mox.patch` (and `@mox.patch_class`) decorators for context-manager-free stubbing, à la `unittest.mock.patch`: the mock is injected as an argument, stubs are restored, and mocks are verified automatically on a passing test. Decorators stack and inject mocks top-to-bottom
 -   The pytest `mox` fixture is now functional: it yields a managed `Mox` (also exposing the module-level helpers and comparators), restores stubs, and verifies mocks automatically when a test passes - without masking a failing test's real error. `mox_verify` is kept as a backward-compatible alias
 -   `mox.replay(factory)` now also puts the instances a `stubout_class` factory produced into replay mode, so a factory can be replayed with a single call
