@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+-   Fixed `with_side_effects` overriding an explicit `and_return(None)`/`returns(None)`; an explicitly configured `None` return value is now respected instead of being replaced by the side effect's return value
+
 ## 1.4.1
 
 -   Fixed tests output when mocking builtin functions

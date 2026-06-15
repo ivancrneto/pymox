@@ -1036,6 +1036,20 @@ class MethodSignatureChecker(object):
     Check = check
 
 
+class _Unset:
+    """Sentinel marking that no return value has been configured.
+
+    Distinguishes "no return value set" from an explicit ``and_return(None)``,
+    so a side effect's return value does not silently override an intended None.
+    """
+
+    def __repr__(self):  # pragma: no cover - debugging aid only
+        return "<unset>"
+
+
+_UNSET = _Unset()
+
+
 class MockMethod(object):
     """Callable mock method.
 
@@ -1088,7 +1102,7 @@ class MockMethod(object):
 
         self._params = None
         self._named_params = None
-        self._return_value = None
+        self._return_value = _UNSET
         self._exception = None
         self._side_effects = None
 
@@ -1123,12 +1137,14 @@ class MockMethod(object):
 
         if expected_method._side_effects:
             result = expected_method._side_effects(*params, **named_params)
-            if expected_method._return_value is None:
+            if expected_method._return_value is _UNSET:
                 expected_method._return_value = result
 
         if expected_method._exception:
             raise expected_method._exception
 
+        if expected_method._return_value is _UNSET:
+            return None
         return expected_method._return_value
 
     def __getattr__(self, name):
@@ -1190,10 +1206,13 @@ class MockMethod(object):
         params = ", ".join(
             [repr(p) for p in self._params or []] + ["%s=%r" % x for x in sorted((self._named_params or {}).items())]
         )
+        # An unconfigured return value is reported as None, matching what a call
+        # with no configured return actually yields.
+        return_value = None if self._return_value is _UNSET else self._return_value
         if self._description and self._name == "__call__":
-            return "%s(%s) -> %r" % (self._description, params, self._return_value)
+            return "%s(%s) -> %r" % (self._description, params, return_value)
 
-        full_desc = "%s(%s) -> %r" % (self._name, params, self._return_value)
+        full_desc = "%s(%s) -> %r" % (self._name, params, return_value)
         if self._description:
             full_desc = "%s.%s" % (self._description, full_desc)
         return full_desc

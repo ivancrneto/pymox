@@ -564,6 +564,19 @@ class MockMethodTest(unittest.TestCase):
         self.assertEqual("mutation", local_list[0])
         self.assertEqual(expected_return, actual_return)
 
+    def test_with_returning_side_effects_with_explicit_none_return(self):
+        """An explicit and_return(None) must win over the side effect's return."""
+        local_list = ["original"]
+
+        def modifier_with_return(mutable_list):
+            mutable_list[0] = "mutation"
+            return "unexpected_return"
+
+        self.expected_method.with_side_effects(modifier_with_return).returns(None)
+        actual_return = self.mock_method(local_list)
+        self.assertEqual("mutation", local_list[0])
+        self.assertIsNone(actual_return)
+
     def test_equality_no_params_equal(self):
         """Methods with the same name and without params should be equal."""
         expected_method = mox.MockMethod("test_method", [], [], False)
