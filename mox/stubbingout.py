@@ -15,6 +15,7 @@
 # limitations under the License.
 
 # Python imports
+import contextlib
 import inspect
 
 
@@ -38,8 +39,13 @@ class StubOutForTesting:
         self.stubs = []
 
     def __del__(self):
-        self.smart_unset_all()
-        self.unset_all()
+        # Best-effort cleanup. __del__ may run during interpreter shutdown,
+        # when modules and classes are already being torn down and setattr can
+        # fail; never let that surface as an "Exception ignored in __del__".
+        # Callers should still unset explicitly; this is only a safety net.
+        with contextlib.suppress(Exception):
+            self.smart_unset_all()
+            self.unset_all()
 
     def smart_set(self, obj, attr_name, new_attr):
         """Replace obj.attr_name with new_attr. This method is smart and works
