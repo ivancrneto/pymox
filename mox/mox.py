@@ -117,6 +117,16 @@ class _MoxManagerMeta(type):
         for mox_instance in list(cls._instances.values()):
             mox_instance.verify_all()
 
+    def forget(cls, instance):
+        """Drop a single Mox instance from the global registry.
+
+        Used by the scoped entry points (the ``@mox.patch`` decorator and the
+        ``mox`` pytest fixture) so they can clean up just their own instance
+        without disturbing other live Mox instances - unlike ``reset_instances``,
+        which clears the whole registry.
+        """
+        cls._instances.pop(id(instance), None)
+
     def reset_instances(cls):
         """Forget all tracked Mox instances.
 
@@ -884,6 +894,21 @@ class _MockObjectFactory(MockObject):
             instance = self._mox.create_mock(self._class_to_mock)
             self._instance_queue.appendleft(instance)
             return instance
+
+    def _replay(self):
+        """Replay the factory and every instance it produced while recording.
+
+        ``replay_all`` already replays the instances (they also live in the
+        owning Mox's ``_mock_objects``), but cascading here lets a caller put a
+        whole factory into replay mode with a single ``mox.replay(factory)`` -
+        e.g. via the ``@mox.patch_class`` decorator, which only hands back the
+        factory. Re-flagging an already-replayed instance is a harmless no-op.
+        """
+        super()._replay()
+        for instance in self._instance_queue:
+            instance._replay()
+
+    _Replay = _replay
 
     def _verify(self):
         """Verify that all mocks have been created."""

@@ -35,6 +35,7 @@ from .comparators import (  # noqa: F401
     value,
 )
 from .contextmanagers import create, expect, stubout  # noqa: F401
+from .decorators import patch, patch_class  # noqa: F401
 from .exceptions import (  # noqa: F401
     Error,
     ExpectedMethodCallsError,
