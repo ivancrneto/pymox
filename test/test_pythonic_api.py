@@ -124,6 +124,19 @@ def test_mox_fixture_records_and_replays(mox):
     # No explicit verify(): the fixture verifies on teardown.
 
 
+def test_expect_singleton_resets_after_call_form():
+    # `mox.expect` is a module-level singleton. Using the call form
+    # `with mox.expect(stub):` must not leave `stubs`/`mox_obj` set on it, or a
+    # later bare `with mox.expect:` would skip the global replay (regression).
+    mock = mox.create.any()
+    with mox.expect(mock):
+        mock.do().returns("ok")
+    assert mock.do() == "ok"
+
+    assert mox.expect.stubs == []
+    assert mox.expect.mox_obj is None
+
+
 def test_mox_verify_alias_still_works(mox_verify):
     # ``mox_verify`` is the historical fixture name, kept as an alias of ``mox``.
     m = mox_verify.stubout(os, "getcwd")

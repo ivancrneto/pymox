@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Split the monolithic 4,600-line `test/mox_test.py` into focused per-concern modules (`test_comparators.py`, `test_mock_objects.py`, `test_mox.py`, `test_mox_testbase.py`, the context-manager variants, etc.) with shared fixtures in `mox_test_fixtures_helper.py`
+- Fixed the `mox.expect` singleton retaining `stubs`/`mox_obj` after a `with mox.expect(...)`: block, which could make a later bare `with mox.expect:` skip the global replay (a cross-test isolation bug previously masked by test-file ordering)
 
 -   Python support: dropped end-of-life Python 3.8 and 3.9 (minimum is now 3.10) and added Python 3.13; CI now also runs on PyPy
 -   CI: added a `mypy` type-checking job (the codebase is now mypy-clean), bumped all GitHub Actions to current major versions, and moved the Codecov token out of a committed file into the `CODECOV_TOKEN` repository secret
