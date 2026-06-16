@@ -1,7 +1,5 @@
-# Python imports
 import unittest
 
-# Internal imports
 import mox
 from mox.testing import pytest_mox
 

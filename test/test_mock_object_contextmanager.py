@@ -17,10 +17,8 @@
 # limitations under the License.
 """Tests for MockObject via the context-manager API."""
 
-# Python imports
 import unittest
 
-# Internal imports
 import mox
 
 from . import mox_test_helper

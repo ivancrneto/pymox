@@ -61,7 +61,6 @@ Suggested usage / workflow:
   my_mox.verify_all()
 """
 
-# Python imports
 import inspect
 import types
 from collections import deque
@@ -190,7 +189,6 @@ class Mox(metaclass=_MoxManagerMeta):
 
     @property
     def expect(self):
-        # Internal imports
         from mox.contextmanagers import Expect
 
         return Expect.from_mox(mox_obj=self)
@@ -478,7 +476,6 @@ class MockAnything:
 
     @property
     def _expect(self):
-        # Internal imports
         from mox.contextmanagers import Expect
 
         return Expect(self)

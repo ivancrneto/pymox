@@ -1,4 +1,3 @@
-# Python imports
 import re
 from typing import Any, Callable, Iterable
 

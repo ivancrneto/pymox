@@ -17,7 +17,6 @@
 # limitations under the License.
 """Shared fixture classes used across the split mox test modules."""
 
-# Python imports
 import re
 
 

@@ -12,8 +12,7 @@ repos:
     - id: mixed-line-ending
     - id: requirements-txt-fixer
     - id: trailing-whitespace
-# Ruff replaces flake8 (lint) and black (format). Import sorting / section
-# headers are still owned by isort below (Ruff cannot emit those headers).
+# Ruff handles linting (flake8), formatting (black) and import sorting (isort).
 - repo: https://github.com/astral-sh/ruff-pre-commit
   rev: v0.12.0
   hooks:
@@ -30,7 +29,3 @@ repos:
       # bandit imports pbr at runtime but does not pull it into the hook's
       # isolated env on newer Python; install it explicitly.
       additional_dependencies: ['pbr']
-- repo: https://github.com/PyCQA/isort
-  rev: 5.13.2
-  hooks:
-    - id: isort

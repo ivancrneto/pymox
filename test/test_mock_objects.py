@@ -17,13 +17,10 @@
 # limitations under the License.
 """Tests for MockMethod, MockAnything and MockObject (classic API)."""
 
-# Python imports
 import unittest
 
-# Pip imports
 import pytest
 
-# Internal imports
 import mox
 
 from . import mox_test_helper

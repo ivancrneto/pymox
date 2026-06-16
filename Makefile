@@ -14,13 +14,12 @@ test:  ## Run the test suite
 test-cov:  ## Run tests with branch coverage (as CI does)
 	pytest --cov=mox --cov-branch --cov-report=term-missing test
 
-lint:  ## Run all linters/formatters in check mode (Ruff + isort + bandit, via pre-commit)
+lint:  ## Run all linters/formatters in check mode (Ruff + bandit, via pre-commit)
 	pre-commit run --all-files
 
 format:  ## Auto-format and sort imports in place
-	ruff format mox pymox test tools
 	ruff check --fix mox pymox test tools
-	isort mox pymox test tools
+	ruff format mox pymox test tools
 
 clean:  ## Remove build/test artifacts
 	rm -rf build dist *.egg-info .pytest_cache .coverage coverage.xml

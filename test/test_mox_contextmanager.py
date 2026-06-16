@@ -17,14 +17,11 @@
 # limitations under the License.
 """Tests for the Mox manager via the context-manager API."""
 
-# Python imports
 import re
 import unittest
 
-# Pip imports
 import pytest
 
-# Internal imports
 import mox
 
 from . import mox_test_helper

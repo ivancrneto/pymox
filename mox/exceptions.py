@@ -1,4 +1,3 @@
-# Python imports
 import difflib
 
 

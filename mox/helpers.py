@@ -1,9 +1,7 @@
-# Python imports
 import pkgutil
 import sys
 from functools import partial, wraps
 
-# Internal imports
 from mox.exceptions import ObjectResolutionError
 
 
@@ -44,13 +42,11 @@ def _resolve_name(name):  # pragma: no cover
     AttributeError - if a failure occurred when traversing the object hierarchy
                      within the imported package to get to the desired object.
     """
-    # Python imports
     import importlib
 
     global _NAME_PATTERN
     if _NAME_PATTERN is None:
         # Lazy import to speedup Python startup time
-        # Python imports
         import re
 
         dotted_words = r"(?!\d)(\w+)(\.(?!\d)(\w+))*"

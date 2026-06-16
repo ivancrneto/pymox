@@ -1,4 +1,3 @@
-# Pip imports
 import pytest
 
 
@@ -19,7 +18,6 @@ class _MoxFixture:
         try:
             return getattr(self._mox, name)
         except AttributeError:
-            # Internal imports
             import mox
 
             return getattr(mox, name)
@@ -41,7 +39,6 @@ def mox(request):
     Stubs are always restored when the test finishes. On a passing test the
     mocks are verified automatically, so no explicit ``verify`` call is needed.
     """
-    # Internal imports
     from mox import Mox
 
     mox_obj = Mox()
@@ -86,7 +83,6 @@ def pytest_runtest_teardown(item):
     """
     yield
 
-    # Internal imports
     import mox
 
     try:

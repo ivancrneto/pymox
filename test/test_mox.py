@@ -17,12 +17,10 @@
 # limitations under the License.
 """Tests for the Mox manager (classic API) and replay/verify/reset."""
 
-# Python imports
 import re
 import sys
 import unittest
 
-# Internal imports
 import mox
 
 from . import mox_test_helper
@@ -852,7 +850,6 @@ class MoxTest(unittest.TestCase):
         self.assertEqual("meta", one.x)
 
     try:
-        # Python imports
         import abc
 
         # I'd use the unittest skipping decorators for this but I want to

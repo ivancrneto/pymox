@@ -17,12 +17,10 @@
 # limitations under the License.
 """Tests for mox comparators."""
 
-# Python imports
 import io
 import re
 import unittest
 
-# Internal imports
 import mox
 
 

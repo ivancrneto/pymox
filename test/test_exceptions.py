@@ -17,10 +17,8 @@
 # limitations under the License.
 """Tests for mox exception types."""
 
-# Python imports
 import unittest
 
-# Internal imports
 import mox
 
 
