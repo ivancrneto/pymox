@@ -1,5 +1,6 @@
 # Python imports
 import re
+from typing import Any, Callable, Iterable
 
 from .exceptions import Error
 
@@ -27,7 +28,7 @@ class Comparator:
     mock_dao.RunQuery(StrContains('SELECT'), IsA(int))
     """
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Special equals method that all comparators must implement.
 
         Args:
@@ -36,13 +37,13 @@ class Comparator:
 
         raise NotImplementedError
 
-    def __eq__(self, rhs):
+    def __eq__(self, rhs: object) -> bool:
         return self.equals(rhs)
 
-    def __ne__(self, rhs):
+    def __ne__(self, rhs: object) -> bool:
         return not self.equals(rhs)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         # __eq__ is overridden, which otherwise makes comparators unhashable in
         # Python 3.  Hash by identity so comparators can be used in sets/dicts.
         return id(self)
@@ -51,13 +52,13 @@ class Comparator:
 class Is(Comparator):
     """Comparison class used to check identity, instead of equality."""
 
-    def __init__(self, obj):
+    def __init__(self, obj: Any) -> None:
         self._obj = obj
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         return rhs is self._obj
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<is %r (%s)>" % (self._obj, id(self._obj))
 
 
@@ -69,7 +70,7 @@ class IsA(Comparator):
     mock_dao.Connect(IsA(DbConnectInfo))
     """
 
-    def __init__(self, class_name):
+    def __init__(self, class_name: Any) -> None:
         """Initialize IsA
 
         Args:
@@ -78,7 +79,7 @@ class IsA(Comparator):
 
         self._class_name = class_name
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Check to see if the RHS is an instance of class_name.
 
         Args:
@@ -96,7 +97,7 @@ class IsA(Comparator):
             # things like cStringIO.StringIO.
             return isinstance(rhs, type(self._class_name))
 
-    def _is_subclass(self, clazz):
+    def _is_subclass(self, clazz: Any) -> bool:
         """Check to see if the IsA comparators class is a subclass of clazz.
 
         Args:
@@ -113,7 +114,7 @@ class IsA(Comparator):
             # things like cStringIO.StringIO.
             return isinstance(clazz, type(self._class_name))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "mox.IsA(%s) " % str(self._class_name)
 
     _IsSubClass = _is_subclass
@@ -126,7 +127,7 @@ class IsAlmost(Comparator):
     Example mock_dao.SetTimeout((IsAlmost(3.9)))
     """
 
-    def __init__(self, float_value, places=7):
+    def __init__(self, float_value: float, places: int = 7) -> None:
         """Initialize IsAlmost.
 
         Args:
@@ -137,7 +138,7 @@ class IsAlmost(Comparator):
         self._float_value = float_value
         self._places = places
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Check to see if RHS is almost equal to float_value
 
         Args:
@@ -154,7 +155,7 @@ class IsAlmost(Comparator):
             # number.
             return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self._float_value)
 
 
@@ -167,7 +168,7 @@ class StrContains(Comparator):
     mock_dao.RunQuery(StrContains('IN (1, 2, 4, 5)')).AndReturn(mock_result)
     """
 
-    def __init__(self, search_string):
+    def __init__(self, search_string: str) -> None:
         """Initialize.
 
         Args:
@@ -177,7 +178,7 @@ class StrContains(Comparator):
 
         self._search_string = search_string
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Check to see if the search_string is contained in the rhs string.
 
         Args:
@@ -193,7 +194,7 @@ class StrContains(Comparator):
         except Exception:
             return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<str containing '%s'>" % self._search_string
 
 
@@ -203,7 +204,7 @@ class Regex(Comparator):
     This uses a given regular expression to determine equality.
     """
 
-    def __init__(self, pattern, flags=0):
+    def __init__(self, pattern: Any, flags: int = 0) -> None:
         """Initialize.
 
         Args:
@@ -215,7 +216,7 @@ class Regex(Comparator):
 
         self.regex = re.compile(pattern, flags=flags)
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Check to see if rhs matches regular expression pattern.
 
         Returns:
@@ -227,7 +228,7 @@ class Regex(Comparator):
         except Exception:
             return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         pattern = self.regex.pattern
         if isinstance(pattern, bytes):
             pattern = pattern.decode()
@@ -245,7 +246,7 @@ class In(Comparator):
     mock_dao.GetUsersInfo(In('expectedUserName')).AndReturn(mock_result)
     """
 
-    def __init__(self, key):
+    def __init__(self, key: Any) -> None:
         """Initialize.
 
         Args:
@@ -254,7 +255,7 @@ class In(Comparator):
 
         self._key = key
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Check to see whether key is in rhs.
 
         Args:
@@ -269,7 +270,7 @@ class In(Comparator):
         except Exception:
             return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<sequence or map containing '%s'>" % str(self._key)
 
 
@@ -280,7 +281,7 @@ class Not(Comparator):
       mock_dao.UpdateUsers(Not(ContainsKeyValue('stevepm', stevepm_user_info)))
     """
 
-    def __init__(self, predicate):
+    def __init__(self, predicate: "Comparator") -> None:
         """Initialize.
 
         Args:
@@ -291,7 +292,7 @@ class Not(Comparator):
             raise Error("predicate %r must be a Comparator." % predicate)
         self._predicate = predicate
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Check to see whether the predicate is False.
 
         Args:
@@ -306,7 +307,7 @@ class Not(Comparator):
         except Exception:
             return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<not '%s'>" % self._predicate
 
 
@@ -317,7 +318,7 @@ class ContainsKeyValue(Comparator):
     mock_dao.UpdateUsers(ContainsKeyValue('stevepm', stevepm_user_info))
     """
 
-    def __init__(self, key, value):
+    def __init__(self, key: Any, value: Any) -> None:
         """Initialize.
 
         Args:
@@ -328,7 +329,7 @@ class ContainsKeyValue(Comparator):
         self._key = key
         self._value = value
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Check whether the given key/value pair is in the rhs dict.
 
         Returns:
@@ -340,7 +341,7 @@ class ContainsKeyValue(Comparator):
         except Exception:
             return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<map containing the entry '%s: %s'>" % (
             str(self._key),
             str(self._value),
@@ -355,7 +356,7 @@ class ContainsAttributeValue(Comparator):
     mock_dao.UpdateSomething(ContainsAttribute('stevepm', stevepm_user_info))
     """
 
-    def __init__(self, key, value):
+    def __init__(self, key: str, value: Any) -> None:
         """Initialize.
 
         Args:
@@ -366,7 +367,7 @@ class ContainsAttributeValue(Comparator):
         self._key = key
         self._value = value
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Check whether the given attribute has a matching value in the rhs
         object.
 
@@ -387,7 +388,7 @@ class SameElementsAs(Comparator):
     mock_dao.ProcessUsers(SameElementsAs('stevepm', 'salomaki'))
     """
 
-    def __init__(self, expected_seq):
+    def __init__(self, expected_seq: Iterable[Any]) -> None:
         """Initialize.
 
         Args:
@@ -396,7 +397,7 @@ class SameElementsAs(Comparator):
         # Store in case expected_seq is an iterator.
         self._expected_list = list(expected_seq)
 
-    def equals(self, actual_seq):
+    def equals(self, actual_seq: Any) -> bool:
         """Check to see whether actual_seq has same elements as expected_seq.
 
         Args:
@@ -416,6 +417,8 @@ class SameElementsAs(Comparator):
             # equality (in MethodSignatureChecker) and to invoke Comparators.
             return False
 
+        expected: Any
+        actual: Any
         try:
             expected = dict([(element, None) for element in self._expected_list])
             actual = dict([(element, None) for element in actual_list])
@@ -434,7 +437,7 @@ class SameElementsAs(Comparator):
         else:
             return set(actual_list) == set(self._expected_list)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<sequence with same elements as '%s'>" % self._expected_list
 
 
@@ -443,7 +446,7 @@ class And(Comparator):
     results.
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args: "Comparator") -> None:
         """Initialize.
 
         Args:
@@ -452,7 +455,7 @@ class And(Comparator):
 
         self._comparators = args
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Checks whether all Comparators are equal to rhs.
 
         Args:
@@ -468,7 +471,7 @@ class And(Comparator):
 
         return True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<AND %s>" % str(self._comparators)
 
 
@@ -477,7 +480,7 @@ class Or(Comparator):
     results.
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args: "Comparator") -> None:
         """Initialize.
 
         Args:
@@ -486,7 +489,7 @@ class Or(Comparator):
 
         self._comparators = args
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Checks whether any Comparator is equal to rhs.
 
         Args:
@@ -502,7 +505,7 @@ class Or(Comparator):
 
         return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<OR %s>" % str(self._comparators)
 
 
@@ -523,7 +526,7 @@ class Func(Comparator):
     mock_dao.DoSomething(Func(myParamValidator), true)
     """
 
-    def __init__(self, func):
+    def __init__(self, func: Callable[[Any], Any]) -> None:
         """Initialize.
 
         Args:
@@ -532,7 +535,7 @@ class Func(Comparator):
 
         self._func = func
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         """Test whether rhs passes the function test.
 
         rhs is passed into func.
@@ -546,7 +549,7 @@ class Func(Comparator):
 
         return self._func(rhs)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self._func)
 
 
@@ -560,7 +563,7 @@ class IgnoreArg(Comparator):
     third. mymock.CastMagic(3, IgnoreArg(), 'disappear')
     """
 
-    def equals(self, unused_rhs):
+    def equals(self, unused_rhs: Any) -> bool:
         """Ignores arguments and returns True.
 
         Args:
@@ -572,7 +575,7 @@ class IgnoreArg(Comparator):
 
         return True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<IgnoreArg>"
 
 
@@ -583,21 +586,21 @@ class Value(Comparator):
     for example.
     """
 
-    def __init__(self):
-        self._value = None
+    def __init__(self) -> None:
+        self._value: Any = None
         self._has_value = False
 
-    def store_value(self, rhs):
+    def store_value(self, rhs: Any) -> None:
         self._value = rhs
         self._has_value = True
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         if not self._has_value:
             return False
         else:
             return rhs == self._value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self._has_value:
             return "<Value %r>" % self._value
         else:
@@ -618,16 +621,16 @@ class Remember(Comparator):
     mock_dao.ReportUsers(users_list)
     """
 
-    def __init__(self, value_store):
+    def __init__(self, value_store: "Value") -> None:
         if not isinstance(value_store, Value):
             raise TypeError("value_store is not an instance of the Value class")
         self._value_store = value_store
 
-    def equals(self, rhs):
+    def equals(self, rhs: Any) -> bool:
         self._value_store.store_value(rhs)
         return True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Remember %d>" % id(self._value_store)
 
 
