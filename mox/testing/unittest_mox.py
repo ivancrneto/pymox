@@ -1,4 +1,3 @@
-# Python imports
 import unittest
 
 
@@ -42,7 +41,6 @@ class MoxMetaTestBase(type):
         Returns:
           The modified method.
         """
-        # Internal imports
         from mox import Mox, stubbingout
 
         def new_method(self, *args, **kwargs):
@@ -92,7 +90,6 @@ class MoxTestBase(_MoxTestBase):  # type: ignore[valid-type,misc]  # base built 
     """
 
     def setUp(self):
-        # Internal imports
         from mox import Mox, stubbingout
 
         super().setUp()

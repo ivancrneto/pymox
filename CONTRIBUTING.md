@@ -40,9 +40,8 @@ regressing (CI enforces a Codecov threshold).
 ## Linting and formatting
 
 Linting and formatting are handled by [pre-commit](https://pre-commit.com):
-**Ruff** (replacing flake8 and black), **isort** (import ordering, including the
-`# Python imports` / `# Internal imports` section headers Ruff does not emit),
-and **bandit**.
+**Ruff** (linting, formatting, and import sorting — replacing flake8, black,
+and isort) and **bandit**.
 
 ```bash
 make lint      # run every hook in check mode (pre-commit run --all-files)
@@ -54,8 +53,8 @@ commit.
 
 ## Conventions
 
-- Keep imports grouped under the `# Python imports` / `# Pip imports` /
-  `# Internal imports` headers; isort maintains these automatically.
+- Imports are grouped (stdlib / third-party / first-party) and sorted by Ruff
+  automatically; just run `make format`.
 - Line length is 120.
 - Public-facing changes should add type hints and update `CHANGELOG.md` under
   `## Unreleased`.

@@ -43,7 +43,6 @@ dev = [
 lint = [
     "pre-commit>=3.5",
     "ruff>=0.12,<0.13",
-    "isort>=5.13,<6",
     "mypy>=1.8",
 ]
 
@@ -104,44 +103,23 @@ exclude = ['mox/__version__\.py']
 [tool.ruff]
 line-length = 120
 target-version = "py310"
-# Ruff replaces black (formatting) and flake8 (linting). Import sorting and its
-# "# Python imports" / "# Internal imports" section headers are still handled by
-# isort below, because Ruff's import sorter does not emit those header comments.
+# Ruff handles linting (flake8), formatting (black) and import sorting (isort).
 extend-exclude = ["mox/__version__.py"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W"]
+# E/W: pycodestyle, F: pyflakes, I: isort.
+select = ["E", "F", "W", "I"]
 # E203 (whitespace before ':') conflicts with how the formatter spaces slices.
 ignore = ["E203"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["mox", "pymox"]
+lines-after-imports = 2
 
 [tool.ruff.format]
 # Keep the existing double-quote, trailing-comma style black produced.
 quote-style = "double"
 
-
-[tool.isort]
-atomic = true
-case_sensitive = true
-filter_files = true
-import_heading_firstparty = "Internal imports"
-import_heading_stdlib = "Python imports"
-import_heading_thirdparty = "Pip imports"
-known_startup = [
-  "startup",
-]
-line_length = 120
-lines_after_imports = 2
-profile = "black"
-py_version = "auto"
-remove_redundant_aliases = true
-sections = [
-  "FUTURE",
-  "STARTUP",
-  "STDLIB",
-  "THIRDPARTY",
-  "FIRSTPARTY",
-  "LOCALFOLDER",
-]
 
 [tool.bandit.assert_used]
 excludes = ['*_test.py', '*/test_*.py']

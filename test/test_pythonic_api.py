@@ -1,13 +1,10 @@
 """Tests for the context-manager-free entry points: the ``@mox.patch``
 decorator and the ``mox`` pytest fixture."""
 
-# Python imports
 import os
 
-# Pip imports
 import pytest
 
-# Internal imports
 import mox
 
 from . import mox_test_helper

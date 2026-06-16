@@ -25,12 +25,10 @@ mox_test.py test suite.
 See mox_test.MoxTestBaseTest for how this class is actually used.
 """
 
-# Python imports
 import abc
 import os
 import re
 
-# Internal imports
 import mox
 
 

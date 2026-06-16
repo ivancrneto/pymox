@@ -21,7 +21,6 @@ written (top to bottom)::
         ...
 """
 
-# Python imports
 import functools
 import inspect
 from typing import Any, Callable, Optional, TypeVar
@@ -33,7 +32,6 @@ F = TypeVar("F", bound=Callable[..., Any])
 def _apply(target: Any, attr_name: Optional[str], use_mock_anything: bool, klass: bool, func: F) -> F:
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        # Internal imports
         from mox.mox import Mox
 
         m = Mox()

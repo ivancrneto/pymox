@@ -7,10 +7,8 @@ to the exact same module object as ``import mox`` - ``pymox is mox`` - and
 submodules such as ``pymox.testing.pytest_mox`` resolve to the ``mox`` ones too.
 """
 
-# Python imports
 import sys
 
-# Internal imports
 import mox
 
 

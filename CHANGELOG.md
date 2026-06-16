@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Added type hints to all comparators (constructors and `equals`), so editors show real signatures for `mox.is_a`, `mox.str_contains`, `mox.func`, and friends
+- Tooling: Ruff now also handles import sorting, replacing isort; the `# Python imports` / `# Pip imports` / `# Internal imports` section-header comments have been dropped in favor of Ruff's standard grouping
 - Split the monolithic 4,600-line `test/mox_test.py` into focused per-concern modules (`test_comparators.py`, `test_mock_objects.py`, `test_mox.py`, `test_mox_testbase.py`, the context-manager variants, etc.) with shared fixtures in `mox_test_fixtures_helper.py`
 - Fixed the `mox.expect` singleton retaining `stubs`/`mox_obj` after a `with mox.expect(...)`: block, which could make a later bare `with mox.expect:` skip the global replay (a cross-test isolation bug previously masked by test-file ordering)
 

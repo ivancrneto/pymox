@@ -1,10 +1,7 @@
-# Python imports
 import re
 
-# Pip imports
 import pytest
 
-# Internal imports
 import mox
 
 from . import mox_test_helper
