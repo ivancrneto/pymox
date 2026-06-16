@@ -96,14 +96,22 @@ class Expect:
         # Internal imports
         import mox
 
-        if not self.mox_obj and not self.stubs:
-            mox.Mox.global_replay()
-            return
+        try:
+            if not self.mox_obj and not self.stubs:
+                mox.Mox.global_replay()
+                return
 
-        if self.mox_obj:
-            self.mox_obj.replay_all()
-        if self.stubs:
-            mox.replay(*self.stubs)
+            if self.mox_obj:
+                self.mox_obj.replay_all()
+            if self.stubs:
+                mox.replay(*self.stubs)
+        finally:
+            # `mox.expect` is a module-level singleton; calling it (e.g.
+            # `with mox.expect(stub):`) sets these on the shared instance. Reset
+            # them so a later bare `with mox.expect:` is not poisoned by leftover
+            # stubs - which would skip the global replay.
+            self.stubs = []
+            self.mox_obj = None
 
     def __call__(self, *stubs):
         self.stubs = stubs
